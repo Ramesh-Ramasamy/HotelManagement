@@ -11,6 +11,7 @@ class Room
     if is_available?
       @customer = customer
       @available = false
+      customer.rooms << self
       p "Check-in successfull for Room: #{self.room_number}"
     else
       p "Room is not available"
@@ -21,6 +22,7 @@ class Room
     if @customer == customer
       @available = true
       @customer = nil
+      p "Room : #{self.room_number} -  checked out"
     else
       p "Can't checkout "
     end

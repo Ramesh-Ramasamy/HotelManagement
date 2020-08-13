@@ -2,7 +2,7 @@ load 'room.rb'
 load 'customer.rb'
 load 'address.rb'
 class Hotel
-  attr_accessor :name, :id 
+  attr_accessor :name, :id, :customer
 
   def initialize(name,deluxe_room_count, non_deluxe_ac_room_count, non_deluxe_non_ac_room_count)
     @name = name
@@ -10,6 +10,7 @@ class Hotel
     @deluxe_rooms = room_factory "Deluxe", deluxe_room_count, 3000
     @non_deluxe_ac_rooms = room_factory "NonDeluxeAc", non_deluxe_ac_room_count, 2000
     @non_deluxe_non_ac_rooms = room_factory "NonDeluxeNonAc", non_deluxe_non_ac_room_count, 1000 
+    @customer = []
   end
 
   def room_factory type, count, price
@@ -40,7 +41,12 @@ class Hotel
     rooms[type][0] if rooms[type]
   end
 
-  def checkin customer, roomtype
+  def add_customer name, id_proof, phone_number, address1, city, state, country, zipcode
+    customer = Customer.new(name, id_proof, phone_number, address1, city, state, country, zipcode)
+    @customer << customer
+  end
+
+  def check_in customer, roomtype
     room = get_available_room roomtype
     if room
       room.check_in customer
@@ -49,8 +55,13 @@ class Hotel
     end
   end
 
+  def check_out customer
+    customer.rooms.each{|room| room.check_out customer}
+  end
+
   def menu
     p "1. List available rooms"
+    p "2. Add Customer"
   end
 
 end
@@ -58,7 +69,7 @@ end
 
 hotel = Hotel.new("The RR Inn",5,10,10)
 p hotel.name
-p hotel.available_rooms 
 hotel.list_available_room
-
-
+hotel.add_customer("Ramesh", "121212", 9876543211, "23, Third cross", "Bangalore", "Karnataka", "India", "569004")
+hotel.check_in hotel.customer[0], "Deluxe"
+hotel.check_out hotel.customer[0]
